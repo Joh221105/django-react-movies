@@ -2,6 +2,7 @@ import json
 from django.http import JsonResponse
 from .models import CustomUser
 from django.contrib.auth import authenticate, login, logout
+from django.views.decorators.csrf import csrf_exempt
 
 # get all users
 
@@ -12,7 +13,7 @@ def user_list(request):
     return JsonResponse({"error": "Invalid request"}, status=405)    # return error if not GET
 
 # create a new user
-
+@csrf_exempt
 def create_user(request):
     if request.method == "POST":
         try:
@@ -59,7 +60,7 @@ def get_user(request, user_id):
 
 
 # update user information
-
+@csrf_exempt
 def update_user(request, user_id):
     if request.method == "PUT":
         try:
@@ -92,7 +93,7 @@ def delete_user(request, user_id):
     return JsonResponse({"error": "Invalid request"}, status=405)    # return error if not DELETE
 
 # login
-
+@csrf_exempt
 def user_login(request):
     if request.method == "POST":
         try:
@@ -108,7 +109,7 @@ def user_login(request):
 
 
 # sign out
-
+@csrf_exempt
 def user_logout(request):
     if request.method == "POST":
         logout(request)    # removes session data for the user
