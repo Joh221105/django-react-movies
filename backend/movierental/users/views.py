@@ -44,9 +44,52 @@ def create_user(request):
 
 # get a user by id
 
+def get_user(request, user_id):
+    try:
+        user = CustomUser.objects.get(id=user_id)
+        return JsonResponse({
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "phone_number": user.phone_number,
+            "address": user.address
+        })
+    except CustomUser.DoesNotExist:
+        return JsonResponse({"error": "User not found"}, status=404)
+
+
 # update user information
 
+def update_user(request, user_id):
+    if request.method == "PUT":
+        try:
+            data = json.loads(request.body)
+            user = CustomUser.objects.get(id=user_id)   # retrieves user from database
+            user.username = data.get("username", user.username)    # updates username 
+            user.email = data.get("email", user.email)    # updates password
+            user.phone_number = data.get("phone_number", user.phone_number)    # updates phone number
+            user.address = data.get("address", user.address)    # updates address
+            if "password" in data:
+                user.set_password(data["password"])
+            user.save()
+            return JsonResponse({"message": "User successfully updated"})
+        except CustomUser.DoesNotExist:
+            return JsonResponse({"error": "User not found"}, status=404)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+    return JsonResponse({"error": "Invalid request"}, status=405)   # return error if not PUT
+
 # delete a user
+
+def delete_user(request, user_id):
+    if request.method == "DELETE":
+        try:
+            user = CustomUser.objects.get(id=user_id)
+            user.delete()
+            return JsonResponse({"message": "User successfully deleted"})
+        except CustomUser.DoesNotExist:
+            return JsonResponse({"error": "User not found"}, status=404)
+    return JsonResponse({"error": "Invalid request"}, status=405)    # return error if not DELETE
 
 # login
 
