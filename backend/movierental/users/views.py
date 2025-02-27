@@ -93,4 +93,24 @@ def delete_user(request, user_id):
 
 # login
 
+def user_login(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            user = authenticate(username=data["username"], password=data["password"])   # checks if the username and password exist in db
+            if user is not None:
+                login(request, user)    # creates a session for the user
+                return JsonResponse({"message": "Login successful"})
+            return JsonResponse({"error": "Invalid credentials"}, status=401)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+    return JsonResponse({"error": "Invalid request"}, status=405)
+
+
 # sign out
+
+def user_logout(request):
+    if request.method == "POST":
+        logout(request)    # removes session data for the user
+        return JsonResponse({"message": "Logout successful"})
+    return JsonResponse({"error": "Invalid request"}, status=405)
