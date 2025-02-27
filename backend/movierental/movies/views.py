@@ -3,13 +3,14 @@ from .models import Movie, Genre
 from django.http import JsonResponse
 import json
 from datetime import datetime
+from django.views.decorators.csrf import csrf_exempt
 
 
 # get all movies
 def get_all_movies(request):
     if request.method == "GET":
         movies = list(Movie.objects.values(
-            "id", "title", "genre_name", "description", "release_date", "available_copies"
+            "id", "title", "genre", "description", "release_date", "available_copies"
         ))
         return JsonResponse(movies, safe=False)
     return JsonResponse({"error": "Invalid request"}, status=405)
@@ -34,6 +35,7 @@ def get_movie_by_id(request, movie_id):
 
 
 # create movie
+@csrf_exempt
 def create_movie(request):
     if request.method == "POST":
         try:
@@ -74,6 +76,7 @@ def create_movie(request):
 
 
 # update movie
+@csrf_exempt
 def update_movie(request, movie_id):
     if request.method == "PUT":
         try:
@@ -101,6 +104,7 @@ def update_movie(request, movie_id):
 
 
 # delete movie
+@csrf_exempt
 def delete_movie(request, movie_id):
     if request.method == "DELETE":
         try:
